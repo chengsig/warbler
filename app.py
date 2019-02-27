@@ -45,12 +45,12 @@ def do_login(user):
 
     session[CURR_USER_KEY] = user.id
 
-
 def do_logout():
     """Logout user."""
 
     if CURR_USER_KEY in session:
-        del session[CURR_USER_KEY]
+        session.pop(CURR_USER_KEY)
+
 
 
 @app.route('/signup', methods=["GET", "POST"])
@@ -113,7 +113,10 @@ def login():
 def logout():
     """Handle logout of user."""
 
-    # IMPLEMENT THIS
+    do_logout()
+
+    flash("You have successfully logged out!")
+    return redirect('/login')
 
 
 ##############################################################################
