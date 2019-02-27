@@ -214,7 +214,7 @@ def stop_following(follow_id):
 def profile():
     """Update profile for current user."""
     form = UserEditForm()
-
+    
     if not g.user:
         flash("please log in to edit profile", "danger")
         return redirect("/login")
@@ -243,7 +243,9 @@ def profile():
         return redirect('/')
 
     else:
-        return render_template('/users/edit.html', form=form)
+
+        user = g.user
+        return render_template('/users/edit.html', form=form, user=user)
     
 
 
@@ -322,12 +324,20 @@ def homepage():
     """Show homepage:
 
     - anon users: no messages
+
     - logged in: 100 most recent messages of followees
     """
 
     if g.user:
+        
+        # messages = Messages.query.filter_by(g.user.id).all() # list of ids
+        import pdb; pdb.set_trace()
+        ppl_were_following = g.user.following
+        ids_of_ppl_were_following = [f.id for f in ppl_were_following]
+
         messages = (Message
                     .query
+                    .filter(Message.user_id.in_(ids_of_ppl_were_following))
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
