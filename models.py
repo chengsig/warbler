@@ -96,6 +96,11 @@ class User(db.Model):
         found_user_list = [user for user in self.following if user == other_user]
         return len(found_user_list) == 1
 
+    def count_likes(self):
+        """return the total number of messages liked by the current user"""
+
+        return len(self.liked_messages)
+
     @classmethod
     def signup(cls, username, email, password, image_url):
         """Sign up user.
@@ -162,7 +167,37 @@ class Message(db.Model):
         db.ForeignKey('users.id', ondelete='CASCADE'),
         nullable=False,
     )
+    
+    likers = db.relationship(
+        'User',
+        secondary='likes',
+        backref='liked_messages')
 
+    def __repr__(self):
+        return f"<Message #{self.id}: {self.text}, Owner: {self.user_id}>"
+
+    def is_liked_by(self, user):
+        """Does this user like this message?"""
+
+        found_liker_list = [liker for liker in self.likers if liker == user]
+        return len(found_liker_list) == 1
+
+class Like(db.Model):
+    """tracking likes of messages by user and users who likes a message"""
+
+    __tablename__ = 'likes'
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete='CASCADE'),
+        primary_key=True,
+    )
+
+    mes_id = db.Column(
+        db.Integer,
+        db.ForeignKey('messages.id', ondelete='CASCADE'),
+        primary_key=True,
+    )
 
 def connect_db(app):
     """Connect this database to provided Flask app.
