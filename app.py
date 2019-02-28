@@ -372,7 +372,11 @@ def homepage():
                     .limit(100)
                     .all())
 
-        return render_template('home.html', messages=messages)
+        liked_messages = Like.query.filter_by(user_id=g.user.id).all()
+
+        msg_set = set(msg.mes_id for msg in liked_messages)
+
+        return render_template('home.html', messages=messages, msg_set=msg_set)
 
     else:
         return render_template('home-anon.html')

@@ -87,25 +87,34 @@ class User(db.Model):
     def is_followed_by(self, other_user):
         """Is this user followed by `other_user`?"""
 
-        found_user_list = [user for user in self.followers if user == other_user]
-        return len(found_user_list) == 1
+        # REFACTORED from below code because it's not necessary to create a new list
+        # we can just use the any function to exit out of the search as soon as we
+        # find a truthy value in our comparison
+        # so beautiful :')
+            # found_user_list = [user for user in self.followers if user == other_user]
+            # return len(found_user_list) == 1
+        return any(user == other_user for user in self.followers)
 
     def is_following(self, other_user):
         """Is this user following `other_use`?"""
 
-        found_user_list = [user for user in self.following if user == other_user]
-        return len(found_user_list) == 1
+        # REFACTORED
+        return any(user == other_user for user in self.following)
 
     def count_likes(self):
         """return the total number of messages liked by the current user"""
 
-        return len(self.liked_messages)
+        # Refactored
+        # return len(self.liked_messages)
+        return Like.query.filter_by(user_id=self.id).count()
 
     def is_liked(self, other_message):
         """return t/f based on if the current user has liked the message"""
 
-        found_message_list = [message for message in self.liked_messages if message == other_message]
-        return len(found_message_list) == 1
+        # Refactored
+        # found_message_list = [message for message in self.liked_messages if message == other_message]
+        # return len(found_message_list) == 1
+        return any(message == other_message for message in self.liked_messages)
 
     @classmethod
     def signup(cls, username, email, password, image_url):
@@ -184,9 +193,9 @@ class Message(db.Model):
 
     def is_liked_by(self, user):
         """Does this user like this message?"""
-
-        found_liker_list = [liker for liker in self.likers if liker == user]
-        return len(found_liker_list) == 1
+        
+        # Refactored
+        return any(liker == user for liker in self.likers)
 
 class Like(db.Model):
     """tracking likes of messages by user and users who likes a message"""
