@@ -29,6 +29,18 @@
                     <button class="btn btn-outline-primary btn-sm">Follow</button>
                   </form>
                 {% endif %}
+                {% if g.user.id != message.user.id %}
+                  {% if g.user.is_liked(message) %}
+                    <form method="POST"
+                          action="/users/unlike/{{ message.id }}">
+                      <button class="btn btn-primary">Unlike</button>
+                    </form>
+                  {% else %}
+                    <form method="POST" action="/users/like/{{ message.id }}">
+                      <button class="btn btn-outline-primary btn-sm">Like</button>
+                    </form>
+                    {% endif %}
+                {% endif %}
               {% endif %}
             </div>
             <p class="single-message">{{ message.text }}</p>

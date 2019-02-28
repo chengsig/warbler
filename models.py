@@ -101,6 +101,12 @@ class User(db.Model):
 
         return len(self.liked_messages)
 
+    def is_liked(self, other_message):
+        """return t/f based on if the current user has liked the message"""
+
+        found_message_list = [message for message in self.liked_messages if message == other_message]
+        return len(found_message_list) == 1
+
     @classmethod
     def signup(cls, username, email, password, image_url):
         """Sign up user.

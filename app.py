@@ -209,6 +209,34 @@ def stop_following(follow_id):
 
     return redirect(f"/users/{g.user.id}/following")
 
+@app.route('/users/like/<int:message_id>', methods=['POST'])
+def like(message_id):
+    """Have currently-logged-in-user likes the message."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    message = Message.query.get_or_404(message_id)
+    g.user.liked_messages.append(message)
+    db.session.commit()
+
+    return redirect('/')
+
+@app.route('/users/unlike/<int:message_id>', methods=['POST'])
+def unlike(message_id):
+    """Have currently-logged-in-user unlike the message."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    message = Message.query.get(message_id)
+    g.user.liked_messages.remove(message)
+    db.session.commit()
+
+    return redirect("/")
+
 
 @app.route('/users/profile', methods=["GET", "POST"])
 def profile():
