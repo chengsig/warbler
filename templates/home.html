@@ -51,20 +51,22 @@
               <span class="text-muted">{{ msg.timestamp.strftime('%d %B %Y') }}</span>
               <p>{{ msg.text }}</p>
             </div>
-              {% if g.user %}
-                {% if g.user.id != msg.user.id %}
-                    {% if g.user.is_liked(msg) %}
-                      <form id="homepage-unlikebtn" method="POST"
-                            action="/users/unlike/{{ msg.id }}">
-                        <button class="btn btn-primary">Unlike</button>
-                      </form>
-                    {% else %}
-                      <form id="homepage-likebtn" method="POST" action="/users/like/{{ msg.id }}">
-                        <button class="btn btn-outline-primary btn-sm">Like</button>
-                      </form>
-                      {% endif %}
-                  {% endif %}
+            {% if g.user %}
+              {% if g.user.id != msg.user.id %}
+                  {% if g.user.is_liked(msg) %}
+                    <form id="homepage-unlikebtn" method="POST"
+                          action="/users/unlike/{{ msg.id }}">
+                      <input type="hidden" name="redirect_to" value="/">
+                      <button class="btn btn-primary">Unlike</button>
+                    </form>
+                  {% else %}
+                    <form id="homepage-likebtn" method="POST" action="/users/like/{{ msg.id }}">
+                      <input type="hidden" name="redirect_to" value="/">
+                      <button class="btn btn-outline-primary btn-sm">Like</button>
+                    </form>
+                    {% endif %}
                 {% endif %}
+              {% endif %}
             
           </li>
         {% endfor %}

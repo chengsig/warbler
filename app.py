@@ -220,8 +220,9 @@ def like(message_id):
     message = Message.query.get_or_404(message_id)
     g.user.liked_messages.append(message)
     db.session.commit()
+    redirect_to = request.form['redirect_to']
 
-    return redirect('/')
+    return redirect(f'{redirect_to}')
 
 @app.route('/users/unlike/<int:message_id>', methods=['POST'])
 def unlike(message_id):
@@ -234,8 +235,9 @@ def unlike(message_id):
     message = Message.query.get(message_id)
     g.user.liked_messages.remove(message)
     db.session.commit()
+    redirect_to = request.form['redirect_to']
 
-    return redirect("/")
+    return redirect(f'{redirect_to}')
 
 
 @app.route('/users/profile', methods=["GET", "POST"])
