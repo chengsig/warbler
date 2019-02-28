@@ -38,21 +38,71 @@ class UserModelTestCase(TestCase):
         User.query.delete()
         Message.query.delete()
         FollowersFollowee.query.delete()
+        #the following is only related to routes, not for model tests
+        #self.client = app.test_client()
 
-        self.client = app.test_client()
+        #set up a user at setup so it can be used to other tests
+        u = User(
+                    email="test@test.com",
+                    username="testuser",
+                    password="HASHED_PASSWORD",
+                    id=99999,
+                )
+        db.session.add(u)
+        u2 = User(
+                    email="test2@test.com",
+                    username='testuser2',
+                    password="HASHED_PASSWORD2",
+                    id=88888
+        )
+
+        db.session.add(u2)
+        db.session.commit()
 
     def test_user_model(self):
         """Does basic model work?"""
-
-        u = User(
-            email="test@test.com",
-            username="testuser",
-            password="HASHED_PASSWORD"
-        )
-
-        db.session.add(u)
-        db.session.commit()
-
+        u = User.query.get(99999)
         # User should have no messages & no followers
         self.assertEqual(len(u.messages), 0)
         self.assertEqual(len(u.followers), 0)
+        #the repr method should produce <User #301: hongshaorou, gaochengsi@wustl.edu>
+        self.assertEqual(repr(u), f'<User #99999: testuser, test@test.com>')
+
+    def test_is_following(self):
+        """Does the is_following work for the user model"""
+        u = User.query.get(99999)
+        u2 = User.query.get(88888)
+
+        #testing false for is following relationship
+        self.assertEqual(u.is_following(u2), False)
+
+    def test_is_following_false(self):
+        """Does the is_following work for the user model"""
+        u = User.query.get(99999)
+        u2 = User.query.get(88888)
+
+        #setting up u99999 to follow u288888:
+        ff = FollowersFollowee(followee_id=99999, follower_id=88888)
+        db.session.add(ff)
+        db.session.commit()
+        self.assertEqual(u.is_following(u2), True)
+
+    def test_if_followed_by(self):
+        """Does the is_followed_by work for the user model"""
+        u = User.query.get(99999)
+        u2 = User.query.get(88888)
+
+        #testing should be false before any following happens
+        self.assertEqual(u.is_followed_by(u2), False)
+
+    def test_is_followed_by_false(self):
+        """Does the is_followed_by work for the user model"""
+        u = User.query.get(99999)
+        u2 = User.query.get(88888)
+
+        #setting up u99999 to follow u288888:
+        ff = FollowersFollowee(followee_id=99999, follower_id=88888)
+        db.session.add(ff)
+        db.session.commit()
+        self.assertEqual(u2.is_followed_by(u), True)
+    
