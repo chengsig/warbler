@@ -463,6 +463,13 @@ p.card-bio {
   text-align: left;
 }
 
+#homepage-likebtn {
+  z-index: 9999;
+}
+
+#homepage-unlikebtn {
+  z-index: 9999;
+}
 /* ========================== Signup/Login */
 
 #user_form input.form-control {
@@ -534,3 +541,4 @@ p.card-bio {
 .message-404 .form-inline input {
   flex: 1;
 }
+
