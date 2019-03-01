@@ -137,7 +137,7 @@ class UserModelTestCase(TestCase):
         db.session.rollback() #line 39 db.session.delete() can't run without rollback due to fouled error - maybe add it in front of line 39 to apply to all tests
     
     def test_authenticate(self):
-        """does the user.authenticate work succcessfully given correct hashed password?"""
+        """does the user.authenticate work succcessfully given correct password?"""
 
         username = "testuser"
         password = "HASHED-PASSWORD"
@@ -146,22 +146,23 @@ class UserModelTestCase(TestCase):
 
         self.assertEqual(auth, User.query.filter_by(username='testuser').first())
 
-    #     @classmethod
-    # def authenticate(cls, username, password):
-    #     """Find user with `username` and `password`.
+    def test_authenticate_unfail(self):
+        """does the user.authenticate return False when we give incorrect username?"""
 
-    #     This is a class method (call it on the class, not an individual user.)
-    #     It searches for a user whose password hash matches this password
-    #     and, if it finds such a user, returns that user object.
+        username = "testuserrrrrrr"
+        password = "HASHED-PASSWORD"
 
-    #     If can't find matching user (or if password is wrong), returns False.
-    #     """
+        auth = User.authenticate(username, password)
 
-    #     user = cls.query.filter_by(username=username).first()
+        self.assertEqual(auth, False)
 
-    #     if user:
-    #         is_auth = bcrypt.check_password_hash(user.password, password)
-    #         if is_auth:
-    #             return user
+    def test_authenticate_pwfail(self):
+        """does the user.authenticate return False when we give incorrect password?"""
 
-    #     return False
+        username = "testuser"
+        password = "HASHED-PASSWORD!!!!"
+
+        auth = User.authenticate(username, password)
+
+        self.assertEqual(auth, False)
+
