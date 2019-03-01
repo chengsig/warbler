@@ -10,6 +10,7 @@ from unittest import TestCase, main
 
 from models import db, User, Message, FollowersFollowee
 from sqlalchemy.exc import IntegrityError
+from flask_bcrypt import Bcrypt
 
 # BEFORE we import our app, let's set an environmental variable
 # to use a different database for tests (we need to do this
@@ -17,7 +18,7 @@ from sqlalchemy.exc import IntegrityError
 # connected to the database
 
 os.environ['DATABASE_URL'] = "postgresql:///warbler-test"
-
+bcrypt = Bcrypt()
 
 # Now we can import app
 
@@ -41,12 +42,12 @@ class UserModelTestCase(TestCase):
         FollowersFollowee.query.delete()
         #the following is only related to routes, not for model tests
         #self.client = app.test_client()
-
+        hashed_pwd = bcrypt.generate_password_hash("HASHED-PASSWORD").decode('UTF-8')
         #set up a user at setup so it can be used to other tests
         u = User(
                     email="test@test.com",
                     username="testuser",
-                    password="HASHED_PASSWORD",
+                    password=hashed_pwd,
                     id=99999,
                 )
         db.session.add(u)
@@ -121,9 +122,9 @@ class UserModelTestCase(TestCase):
         self.assertEqual(len(User.query.all()), 3)
 
     def test_create_returns_valid_vals(self):
-        """Does the User.create successfully create a new user given valid credentials?"""
+        """Does the User.create successfully create a new user given existing unique data (username)?"""
 
-        username = "testuser2"
+        username = "testuser2" #existing in database through setup 
         email = "test3@test.com"
         password = "HASHED_PASS"
         image_url = "https://i.gifer.com/WyD2.gif"
@@ -131,22 +132,36 @@ class UserModelTestCase(TestCase):
         User.signup(username, email, password, image_url)
 
         self.assertRaises(IntegrityError, db.session.commit)
-    
-    # @classmethod
-    # def signup(cls, username, email, password, image_url):
-    #     """Sign up user.
 
-    #     Hashes password and adds user to system.
+        # at this point, transaction is "fouled", so let's explicitly rollback
+        db.session.rollback() #line 39 db.session.delete() can't run without rollback due to fouled error - maybe add it in front of line 39 to apply to all tests
+    
+    def test_authenticate(self):
+        """does the user.authenticate work succcessfully given correct hashed password?"""
+
+        username = "testuser"
+        password = "HASHED-PASSWORD"
+
+        auth = User.authenticate(username, password)
+
+        self.assertEqual(auth, User.query.filter_by(username='testuser').first())
+
+    #     @classmethod
+    # def authenticate(cls, username, password):
+    #     """Find user with `username` and `password`.
+
+    #     This is a class method (call it on the class, not an individual user.)
+    #     It searches for a user whose password hash matches this password
+    #     and, if it finds such a user, returns that user object.
+
+    #     If can't find matching user (or if password is wrong), returns False.
     #     """
 
-    #     hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
+    #     user = cls.query.filter_by(username=username).first()
 
-    #     user = User(
-    #         username=username,
-    #         email=email,
-    #         password=hashed_pwd,
-    #         image_url=image_url,
-    #     )
+    #     if user:
+    #         is_auth = bcrypt.check_password_hash(user.password, password)
+    #         if is_auth:
+    #             return user
 
-    #     db.session.add(user)
-    #     return user
+    #     return False
