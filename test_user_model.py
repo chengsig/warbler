@@ -6,9 +6,10 @@
 
 
 import os
-from unittest import TestCase
+from unittest import TestCase, main
 
 from models import db, User, Message, FollowersFollowee
+from sqlalchemy.exc import IntegrityError
 
 # BEFORE we import our app, let's set an environmental variable
 # to use a different database for tests (we need to do this
@@ -106,3 +107,46 @@ class UserModelTestCase(TestCase):
         db.session.commit()
         self.assertEqual(u2.is_followed_by(u), True)
     
+    def test_create_returns_valid_vals(self):
+        """Does the User.create successfully create a new user given valid credentials?"""
+
+        username = "testuser3"
+        email = "test3@test.com"
+        password = "HASHED_PASS"
+        image_url = "https://i.gifer.com/WyD2.gif"
+
+        User.signup(username, email, password, image_url)
+        db.session.commit()
+
+        self.assertEqual(len(User.query.all()), 3)
+
+    def test_create_returns_valid_vals(self):
+        """Does the User.create successfully create a new user given valid credentials?"""
+
+        username = "testuser2"
+        email = "test3@test.com"
+        password = "HASHED_PASS"
+        image_url = "https://i.gifer.com/WyD2.gif"
+
+        User.signup(username, email, password, image_url)
+
+        self.assertRaises(IntegrityError, db.session.commit)
+    
+    # @classmethod
+    # def signup(cls, username, email, password, image_url):
+    #     """Sign up user.
+
+    #     Hashes password and adds user to system.
+    #     """
+
+    #     hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
+
+    #     user = User(
+    #         username=username,
+    #         email=email,
+    #         password=hashed_pwd,
+    #         image_url=image_url,
+    #     )
+
+    #     db.session.add(user)
+    #     return user
