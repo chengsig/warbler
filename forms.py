@@ -34,4 +34,9 @@ class UserEditForm(FlaskForm):
     image_url = StringField('(Optional) Image URL')
     header_image_url = StringField('(Optional) Header Image URL')
     bio = TextAreaField('(Optional) Bio')
-    password = PasswordField('Password', validators=[Length(min=6)])
+
+
+# class ChangePasswordForm(FlaskForm):
+#     """Form for editing password"""
+
+#     password = PasswordField('Password', validators=[Length(min=6)])
