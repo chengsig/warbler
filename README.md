@@ -4,7 +4,7 @@
 
 Warbler is a Twitter clone using Flask as the technology framework and Python as the language. The site is live hosted at [pizza warbler](https://pizzawarbler.herokuapp.com/).
 
-Pizza Warbler allows the user to register and participate in the community. The user can follow/unfollow another user, and like/dislike other users' warbles.
+Pizza Warbler allows the user to register and participate in the community. The user can follow/unfollow another user, post messages, and like/dislike other users' messages. 
 
 This website is one of the [Rithm School](https://www.rithmschool.com/) multi-day sprint exercises. Please feel free to sign up a new account, or use the following test account. **username:** testaccount **password:** testaccount
 
