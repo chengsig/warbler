@@ -192,7 +192,7 @@ def add_follow(follow_id):
     g.user.following.append(followee)
     db.session.commit()
 
-    return redirect("/users/")
+    return redirect("/users")
 
 
 @app.route('/users/stop-following/<int:follow_id>', methods=['POST'])
@@ -207,7 +207,7 @@ def stop_following(follow_id):
     g.user.following.remove(followee)
     db.session.commit()
 
-    return redirect("/users/")
+    return redirect("/users")
 
 @app.route('/users/like/<int:message_id>', methods=['POST'])
 def like(message_id):
