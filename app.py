@@ -83,7 +83,7 @@ def signup():
 
         do_login(user)
 
-        return redirect("/")
+        return redirect("/users")
 
     else:
         return render_template('users/signup.html', form=form)
@@ -192,7 +192,7 @@ def add_follow(follow_id):
     g.user.following.append(followee)
     db.session.commit()
 
-    return redirect(f"/users/{g.user.id}/following")
+    return redirect("/users/")
 
 
 @app.route('/users/stop-following/<int:follow_id>', methods=['POST'])
@@ -207,7 +207,7 @@ def stop_following(follow_id):
     g.user.following.remove(followee)
     db.session.commit()
 
-    return redirect(f"/users/{g.user.id}/following")
+    return redirect("/users/")
 
 @app.route('/users/like/<int:message_id>', methods=['POST'])
 def like(message_id):
